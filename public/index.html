@@ -1,1 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ASTRAL-MD | Premium Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040608;
+  --bg2:#080c10;
+  --bg3:#0d1117;
+  --panel:#0a0f16;
+  --border:#1a2535;
+  --accent:#00d4ff;
+  --accent2:#7c3aed;
+  --accent3:#10b981;
+  --danger:#ef4444;
+  --warn:#f59e0b;
+  --text:#e2e8f0;
+  --muted:#4a5568;
+  --glow: 0 0 20px rgba(0,212,255,0.3);
+  --glow2: 0 0 20px rgba(124,58,237,0.3);
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
 
+/* ── Background grid ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0
+}
+
+/* ── Login screen ── */
+#login-screen{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg)
+}
+.login-box{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:16px;padding:48px 40px;width:380px;
+  box-shadow:0 0 60px rgba(0,212,255,0.1);
+  position:relative;overflow:hidden
+}
+.login-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent2),var(--accent),var(--accent3))
+}
+.login-logo{
+  font-family:'Orbitron',monospace;font-size:22px;font-weight:900;
+  color:var(--accent);text-align:center;margin-bottom:4px;
+  text-shadow:var(--glow)
+}
+.login-sub{font-size:11px;color:var(--muted);text-align:center;
+  letter-spacing:3px;text-transform:uppercase;margin-bottom:36px}
+.login-box input{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;color:var(--text);
+  font-family:'Share Tech Mono',monospace;font-size:13px;
+  margin-bottom:12px;outline:none;transition:.2s
+}
+.login-box input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,212,255,0.1)}
+.btn-login{
+  width:100%;background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border:none;border-radius:8px;padding:13px;color:#fff;
+  font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+  letter-spacing:2px;cursor:pointer;transition:.2s;margin-top:4px
+}
+.btn-login:hover{opacity:.85;box-shadow:var(--glow)}
+.login-err{color:var(--danger);font-size:12px;text-align:center;margin-top:8px;min-height:18px}
+
+/* ── App shell ── */
+#app{display:none}
+#app.show{display:block}
+
+/* ── Topbar ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(4,6,8,0.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px
+}
+.topbar-logo{font-family:'Orbitron',monospace;font-size:16px;
+  font-weight:900;color:var(--accent);text-shadow:var(--glow)}
+.topbar-logo span{color:var(--accent2)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.badge-online{
+  background:rgba(16,185,129,0.15);border:1px solid var(--accent3);
+  color:var(--accent3);font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;padding:4px 10px;border-radius:20px;
+  font-family:'Share Tech Mono',monospace
+}
+.btn-logout{
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);padding:6px 14px;border-radius:6px;
+  font-size:11px;cursor:pointer;transition:.2s;font-family:'Share Tech Mono',monospace
+}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger)}
+
+/* ── Main layout ── */
+.main{max-width:1100px;margin:0 auto;padding:32px 24px}
+
+/* ── Stats grid ── */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.stat-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:24px;position:relative;overflow:hidden
+}
+.stat-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px
+}
+.stat-card.total::after{background:var(--accent)}
+.stat-card.used::after{background:var(--warn)}
+.stat-card.unused::after{background:var(--accent3)}
+.stat-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.stat-value{font-family:'Orbitron',monospace;font-size:36px;font-weight:900}
+.stat-card.total .stat-value{color:var(--accent)}
+.stat-card.used .stat-value{color:var(--warn)}
+.stat-card.unused .stat-value{color:var(--accent3)}
+
+/* ── Panels ── */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px}
+.panel-title{
+  font-family:'Orbitron',monospace;font-size:12px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)
+}
+
+/* ── Generate section ── */
+.gen-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.gen-row input, .gen-row select{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;color:var(--text);
+  font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:.2s
+}
+.gen-row input:focus,.gen-row select:focus{border-color:var(--accent)}
+.gen-row input[placeholder="Note (user name)"],.gen-row input[placeholder="Count"]{width:180px}
+.btn{
+  padding:10px 20px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Orbitron',monospace;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;transition:.2s;white-space:nowrap
+}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff}
+.btn-primary:hover{opacity:.85;box-shadow:var(--glow)}
+.btn-success{background:rgba(16,185,129,0.15);border:1px solid var(--accent3);color:var(--accent3)}
+.btn-success:hover{background:rgba(16,185,129,0.25)}
+.btn-danger{background:rgba(239,68,68,0.1);border:1px solid var(--danger);color:var(--danger)}
+.btn-danger:hover{background:rgba(239,68,68,0.2)}
+.btn-warn{background:rgba(245,158,11,0.1);border:1px solid var(--warn);color:var(--warn)}
+.btn-warn:hover{background:rgba(245,158,11,0.2)}
+
+/* ── Generated code display ── */
+.code-result{
+  margin-top:16px;background:var(--bg3);border:1px solid var(--accent);
+  border-radius:8px;padding:16px 20px;display:none;
+  font-family:'Share Tech Mono',monospace;font-size:13px;
+  color:var(--accent);text-shadow:var(--glow);
+  display:none;align-items:center;justify-content:space-between;gap:12px
+}
+.code-result.show{display:flex}
+.copy-btn{
+  background:transparent;border:1px solid var(--accent);color:var(--accent);
+  padding:5px 12px;border-radius:6px;font-size:10px;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;transition:.2s;white-space:nowrap
+}
+.copy-btn:hover{background:rgba(0,212,255,0.1)}
+.copy-btn.copied{border-color:var(--accent3);color:var(--accent3)}
+
+/* ── Filter tabs ── */
+.filter-tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{
+  padding:6px 16px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:11px;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;transition:.2s;letter-spacing:1px
+}
+.tab.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,0.05)}
+
+/* ── Table ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{
+  text-align:left;padding:10px 12px;
+  font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--border)
+}
+td{padding:12px;border-bottom:1px solid rgba(26,37,53,0.5);
+  font-family:'Share Tech Mono',monospace;vertical-align:middle}
+tr:hover td{background:rgba(0,212,255,0.02)}
+.badge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600
+}
+.badge-used{background:rgba(245,158,11,0.15);color:var(--warn);border:1px solid rgba(245,158,11,0.3)}
+.badge-unused{background:rgba(16,185,129,0.15);color:var(--accent3);border:1px solid rgba(16,185,129,0.3)}
+.code-text{color:var(--accent);font-size:11px}
+.actions{display:flex;gap:6px}
+.action-btn{
+  padding:4px 10px;border-radius:4px;border:none;cursor:pointer;
+  font-size:9px;font-family:'Share Tech Mono',monospace;transition:.2s;letter-spacing:1px
+}
+.del-btn{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2)}
+.del-btn:hover{background:rgba(239,68,68,0.2)}
+.reset-btn{background:rgba(245,158,11,0.1);color:var(--warn);border:1px solid rgba(245,158,11,0.2)}
+.reset-btn:hover{background:rgba(245,158,11,0.2)}
+
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:13px;
+  font-family:'Share Tech Mono',monospace}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;bottom:28px;right:28px;z-index:999;
+  background:var(--panel);border:1px solid var(--accent3);
+  color:var(--accent3);padding:12px 20px;border-radius:8px;
+  font-family:'Share Tech Mono',monospace;font-size:12px;
+  transform:translateY(80px);opacity:0;transition:.3s;pointer-events:none
+}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.err{border-color:var(--danger);color:var(--danger)}
+
+/* ── Bulk result ── */
+.bulk-list{
+  margin-top:16px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:16px;display:none;max-height:200px;overflow-y:auto
+}
+.bulk-list.show{display:block}
+.bulk-code{
+  font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);
+  padding:4px 0;border-bottom:1px solid rgba(26,37,53,0.4)
+}
+.bulk-code:last-child{border-bottom:none}
+
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr}
+  .gen-row{flex-direction:column}
+  .topbar{padding:12px 16px}
+  .main{padding:20px 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">ASTRAL<span>-MD</span></div>
+    <div class="login-sub">Premium Admin Panel</div>
+    <input type="password" id="login-pass" placeholder="Password"/>
+    <button class="btn-login" onclick="doLogin()">ACCESS SYSTEM</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">ASTRAL<span>-MD</span> &nbsp;⬡&nbsp; PREMIUM</div>
+    <div class="topbar-right">
+      <div class="badge-online">● ONLINE</div>
+      <button class="btn-logout" onclick="logout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-label">Total Codes</div>
+        <div class="stat-value" id="stat-total">—</div>
+      </div>
+      <div class="stat-card used">
+        <div class="stat-label">Used</div>
+        <div class="stat-value" id="stat-used">—</div>
+      </div>
+      <div class="stat-card unused">
+        <div class="stat-label">Available</div>
+        <div class="stat-value" id="stat-unused">—</div>
+      </div>
+    </div>
+
+    <!-- GENERATE SINGLE -->
+    <div class="panel">
+      <div class="panel-title">⬡ Generate Premium Code</div>
+      <div class="gen-row">
+        <input type="text" id="gen-note" placeholder="Note (user name)" />
+        <button class="btn btn-primary" onclick="generateCode()">GENERATE CODE</button>
+        <button class="btn btn-success" onclick="showBulkSection()">BULK GENERATE</button>
+      </div>
+      <div class="code-result" id="code-result">
+        <span id="code-display"></span>
+        <button class="copy-btn" id="copy-btn" onclick="copyCode()">COPY</button>
+      </div>
+      <!-- Bulk -->
+      <div id="bulk-section" style="display:none;margin-top:16px">
+        <div class="gen-row">
+          <input type="number" id="bulk-count" placeholder="Count" min="1" max="50" value="5"/>
+          <input type="text" id="bulk-note" placeholder="Note"/>
+          <button class="btn btn-success" onclick="generateBulk()">GENERATE BULK</button>
+        </div>
+        <div class="bulk-list" id="bulk-list"></div>
+      </div>
+    </div>
+
+    <!-- CODES TABLE -->
+    <div class="panel">
+      <div class="panel-title">⬡ Premium Codes</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <div class="filter-tabs">
+          <button class="tab active" onclick="setFilter('all',this)">ALL</button>
+          <button class="tab" onclick="setFilter('unused',this)">AVAILABLE</button>
+          <button class="tab" onclick="setFilter('used',this)">USED</button>
+        </div>
+        <button class="btn btn-warn" onclick="loadCodes()">↻ REFRESH</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Status</th>
+              <th>Note</th>
+              <th>Used By</th>
+              <th>Used At</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="codes-tbody">
+            <tr><td colspan="7" class="empty-state">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = '';
+let TOKEN = localStorage.getItem('astral_token') || '';
+let currentFilter = 'all';
+
+// ── Auto login if token exists ─────────────────────
+window.onload = () => {
+  if (TOKEN) tryAutoLogin();
+};
+
+async function tryAutoLogin() {
+  const res = await fetch(`${API}/api/admin/stats`, {
+    headers: { Authorization: `Bearer ${TOKEN}` }
+  });
+  if (res.ok) showApp();
+  else { TOKEN = ''; localStorage.removeItem('astral_token'); }
+}
+
+// ── Login ──────────────────────────────────────────
+async function doLogin() {
+  const password = document.getElementById('login-pass').value.trim();
+  if (!password) return setErr('Enter password');
+  try {
+    const res = await fetch(`${API}/api/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    if (!res.ok) return setErr(data.error || 'Login failed');
+    TOKEN = data.token;
+    localStorage.setItem('astral_token', TOKEN);
+    showApp();
+  } catch { setErr('Connection failed'); }
+}
+
+function setErr(msg) { document.getElementById('login-err').textContent = msg; }
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  loadStats();
+  loadCodes();
+}
+
+function logout() {
+  TOKEN = '';
+  localStorage.removeItem('astral_token');
+  location.reload();
+}
+
+// ── Stats ──────────────────────────────────────────
+async function loadStats() {
+  const res = await fetch(`${API}/api/admin/stats`, { headers: authH() });
+  if (!res.ok) return;
+  const { total, used, unused } = await res.json();
+  document.getElementById('stat-total').textContent  = total;
+  document.getElementById('stat-used').textContent   = used;
+  document.getElementById('stat-unused').textContent = unused;
+}
+
+// ── Generate ───────────────────────────────────────
+async function generateCode() {
+  const note = document.getElementById('gen-note').value.trim();
+  const res = await fetch(`${API}/api/admin/generate`, {
+    method:'POST', headers:{...authH(),'Content-Type':'application/json'},
+    body: JSON.stringify({ note })
+  });
+  const data = await res.json();
+  if (!res.ok) return toast(data.error || 'Failed', true);
+  const el = document.getElementById('code-result');
+  document.getElementById('code-display').textContent = data.code;
+  el.classList.add('show');
+  document.getElementById('copy-btn').textContent = 'COPY';
+  document.getElementById('copy-btn').className = 'copy-btn';
+  toast('Code generated!');
+  loadStats(); loadCodes();
+}
+
+function copyCode() {
+  const code = document.getElementById('code-display').textContent;
+  navigator.clipboard.writeText(code);
+  const btn = document.getElementById('copy-btn');
+  btn.textContent = 'COPIED ✓';
+  btn.classList.add('copied');
+  toast('Copied to clipboard!');
+}
+
+let bulkVisible = false;
+function showBulkSection() {
+  bulkVisible = !bulkVisible;
+  document.getElementById('bulk-section').style.display = bulkVisible ? 'block' : 'none';
+}
+
+async function generateBulk() {
+  const count = parseInt(document.getElementById('bulk-count').value) || 5;
+  const note  = document.getElementById('bulk-note').value.trim();
+  const res = await fetch(`${API}/api/admin/generate-bulk`, {
+    method:'POST', headers:{...authH(),'Content-Type':'application/json'},
+    body: JSON.stringify({ count, note })
+  });
+  const data = await res.json();
+  if (!res.ok) return toast(data.error || 'Failed', true);
+  const listEl = document.getElementById('bulk-list');
+  listEl.innerHTML = data.codes.map(c =>
+    `<div class="bulk-code" onclick="navigator.clipboard.writeText('${c}')" title="Click to copy">${c}</div>`
+  ).join('');
+  listEl.classList.add('show');
+  toast(`${data.count} codes generated!`);
+  loadStats(); loadCodes();
+}
+
+// ── Codes table ────────────────────────────────────
+async function loadCodes() {
+  const res = await fetch(`${API}/api/admin/codes?filter=${currentFilter}`, { headers: authH() });
+  if (!res.ok) return;
+  const { codes } = await res.json();
+  const tbody = document.getElementById('codes-tbody');
+  if (!codes.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No codes found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = codes.map(c => `
+    <tr>
+      <td class="code-text">${c.code}</td>
+      <td><span class="badge ${c.used ? 'badge-used' : 'badge-unused'}">${c.used ? 'USED' : 'ACTIVE'}</span></td>
+      <td style="color:var(--muted)">${c.note || '—'}</td>
+      <td style="color:var(--muted)">${c.usedBy || '—'}</td>
+      <td style="color:var(--muted)">${c.usedAt ? new Date(c.usedAt).toLocaleString() : '—'}</td>
+      <td style="color:var(--muted)">${new Date(c.createdAt).toLocaleDateString()}</td>
+      <td>
+        <div class="actions">
+          ${c.used ? `<button class="action-btn reset-btn" onclick="resetCode('${c.code}')">RESET</button>` : ''}
+          <button class="action-btn del-btn" onclick="deleteCode('${c.code}')">DELETE</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  loadCodes();
+}
+
+async function deleteCode(code) {
+  if (!confirm(`Delete ${code}?`)) return;
+  const res = await fetch(`${API}/api/admin/codes/${code}`, {
+    method:'DELETE', headers: authH()
+  });
+  if (res.ok) { toast('Code deleted'); loadStats(); loadCodes(); }
+  else toast('Delete failed', true);
+}
+
+async function resetCode(code) {
+  if (!confirm(`Reset ${code}? (can be used again)`)) return;
+  const res = await fetch(`${API}/api/admin/codes/${code}/reset`, {
+    method:'PATCH', headers: authH()
+  });
+  if (res.ok) { toast('Code reset'); loadStats(); loadCodes(); }
+  else toast('Reset failed', true);
+}
+
+// ── Helpers ────────────────────────────────────────
+function authH() { return { Authorization: `Bearer ${TOKEN}` }; }
+
+function toast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (err ? ' err' : '');
+  setTimeout(() => t.className = '', 3000);
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') doLogin();
+});
+</script>
+</body>
+</html>
