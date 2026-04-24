@@ -2,14 +2,19 @@
   "name": "astral-md-premium",
   "version": "1.0.0",
   "description": "ASTRAL-MD Premium License System",
+  "main": "index.js",
   "scripts": {
-    "dev": "netlify dev"
+    "start": "node index.js"
   },
   "dependencies": {
     "mongoose": "^8.0.0",
-    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.0",
     "nanoid": "^3.3.7",
-    "@netlify/functions": "^2.0.0"
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
